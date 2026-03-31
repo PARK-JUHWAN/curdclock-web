@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google-site-verification" content="Nckr8u7FdG3YoSaB23-Y5gRsXuLk-5Z3EjmR8eEfrkk" />
+<title>CurdClock — Cheese Making Timer & Calculator</title>
+<meta name="description" content="Step-by-step cheesemaking timer with flocculation calculator, rennet dosing, and aging tracker. Know exactly when to cut, stir, drain, and flip. Free cheesemaking timer for iOS.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="CurdClock — Cheese Making Timer & Calculator">
+<meta property="og:description" content="Flocculation calculator, rennet dosing, batch timer, aging tracker. Built for home cheesemakers.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0A1628;
+  --surface: #111f38;
+  --border: #1e3154;
+  --text: #e8eaed;
+  --text-dim: #8b919a;
+  --accent: #F5C842;
+  --accent-glow: rgba(245, 200, 66, 0.15);
+  --green: #34d399;
+  --yellow: #F5C842;
+  --red: #f87171;
+  --white: #ffffff;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 16px 0;
+  background: rgba(10, 22, 40, 0.88);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+
+nav .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.logo-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--accent);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.logo-text {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--text);
+}
+
+nav a.nav-link {
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+nav a.nav-link:hover { color: var(--text); }
+
+.hero {
+  padding: 160px 0 100px;
+  text-align: center;
+  position: relative;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.badge-pill {
+  display: inline-block;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 6px 16px;
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 500;
+  margin-bottom: 24px;
+  letter-spacing: 0.5px;
+}
+
+h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 800;
+  font-size: clamp(36px, 6vw, 60px);
+  line-height: 1.1;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+h1 span { color: var(--accent); }
+
+.hero-sub {
+  font-size: 18px;
+  color: var(--text-dim);
+  max-width: 520px;
+  margin: 0 auto 40px;
+  line-height: 1.7;
+}
+
+.cta-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #0A1628;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px var(--accent-glow);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-outline:hover {
+  border-color: var(--text-dim);
+  background: var(--surface);
+}
+
+/* Demo card */
+.demo-section { padding: 80px 0; }
+
+.section-label {
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+h2 {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 32px;
+  margin-bottom: 48px;
+}
+
+.dose-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.dose-row {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.param-block {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 20px;
+}
+
+.param-label {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.param-values {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.param-current {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.param-arrow {
+  color: var(--text-dim);
+  font-size: 14px;
+}
+
+.param-target {
+  font-size: 16px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.dose-result {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.dose-result strong {
+  color: var(--accent);
+  font-size: 15px;
+}
+
+.disclaimer-small {
+  margin-top: 20px;
+  font-size: 11px;
+  color: var(--text-dim);
+  text-align: center;
+  line-height: 1.5;
+  opacity: 0.7;
+}
+
+/* Features */
+.features-section { padding: 80px 0; }
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.feature-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  transition: border-color 0.3s;
+}
+
+.feature-card:hover { border-color: var(--accent); }
+
+.feature-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin-bottom: 16px;
+}
+
+.feature-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.feature-card p {
+  font-size: 14px;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+/* Cheese types */
+.brands-section { padding: 80px 0; }
+
+.brands-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.brand-tag {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 8px 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* How */
+.how-section { padding: 80px 0; }
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 48px;
+}
+
+.step { text-align: center; }
+
+.step-number {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #0A1628;
+  font-family: 'Fraunces', serif;
+  font-weight: 800;
+  font-size: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.step h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.step p { font-size: 14px; color: var(--text-dim); }
+
+/* CTA */
+.cta-section { padding: 80px 0; text-align: center; }
+.cta-section h2 { margin-bottom: 16px; }
+.cta-section p { color: var(--text-dim); margin-bottom: 32px; font-size: 16px; }
+
+/* Footer */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 40px 0;
+  text-align: center;
+}
+
+footer p { font-size: 13px; color: var(--text-dim); }
+
+footer a { color: var(--text-dim); text-decoration: none; }
+footer a:hover { color: var(--text); }
+
+.footer-links {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+@media (max-width: 640px) {
+  .steps { grid-template-columns: 1fr; gap: 32px; }
+  .hero { padding: 130px 0 60px; }
+  h2 { font-size: 26px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a class="logo" href="#">
+      <div class="logo-icon">🧀</div>
+      <span class="logo-text">CurdClock</span>
+    </a>
+    <a class="nav-link" href="mailto:naruto0414@gmail.com">Contact</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container">
+    <div class="badge-pill">Cheesemaking Timer for iOS</div>
+    <h1>Make cheese<br><span>with perfect timing</span></h1>
+    <p class="hero-sub">Flocculation calculator, rennet dosing, step-by-step batch timer, and aging tracker — everything a home cheesemaker needs in one app.</p>
+    <div class="cta-row">
+      <a href="#" class="btn btn-primary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        App Store
+      </a>
+      <a href="#features" class="btn btn-outline">Learn More ↓</a>
+    </div>
+  </div>
+</section>
+
+<section class="demo-section">
+  <div class="container" style="text-align:center;">
+    <p class="section-label">Example Calculation</p>
+    <h2>Cut curd at exactly the right moment</h2>
+    <div class="dose-card">
+      <div class="dose-row">
+        <div class="param-block">
+          <div class="param-label">Flocculation · Cheddar · Single Strength Rennet</div>
+          <div class="param-values">
+            <span class="param-current">Floc at 12 min</span>
+            <span class="param-arrow">× 3.0</span>
+            <span class="param-target">Cut at 36 min</span>
+          </div>
+          <div class="dose-result">Wait <strong>24 more minutes</strong> after flocculation</div>
+        </div>
+        <div class="param-block">
+          <div class="param-label">Rennet Dose · 2 gal Pasteurized · Single Strength</div>
+          <div class="param-values">
+            <span class="param-current">2 gallons</span>
+            <span class="param-arrow">→</span>
+            <span class="param-target">½ tsp (2.5 ml)</span>
+          </div>
+          <div class="dose-result">Dilute in <strong>½ cup (120 ml)</strong> cool non-chlorinated water</div>
+        </div>
+        <div class="param-block">
+          <div class="param-label">Aging Tracker · Gouda · Day 14 of 60</div>
+          <div class="param-values">
+            <span class="param-current">Day 14</span>
+            <span class="param-arrow">→</span>
+            <span class="param-target" style="color:var(--yellow);">Flip today</span>
+          </div>
+          <div class="dose-result">Next flip in <strong>3 days</strong> · 46 days remaining</div>
+        </div>
+      </div>
+      <p class="disclaimer-small">Timing guide only — always check curd texture before cutting. Results vary by milk, rennet, and conditions.</p>
+    </div>
+  </div>
+</section>
+
+<section class="features-section" id="features">
+  <div class="container">
+    <p class="section-label">Features</p>
+    <h2>Built for home cheesemakers</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(245,200,66,0.12);">⏱️</div>
+        <h3>Flocculation Calculator</h3>
+        <p>Observe floc time, select your cheese type, and get the exact cut time — no mental math mid-process.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(245,200,66,0.12);">🧪</div>
+        <h3>Rennet Dose Calculator</h3>
+        <p>Enter milk volume, rennet type, and milk type. Get the precise dose in tsp and ml with dilution water amount.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(52,211,153,0.12);">📋</div>
+        <h3>Step-by-Step Batch Timer</h3>
+        <p>Follow 12+ timed steps per recipe. Change your start time and all step times recalculate instantly. (Pro)</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(245,200,66,0.12);">🧀</div>
+        <h3>Aging Tracker</h3>
+        <p>Track multiple cheeses aging simultaneously. Color-coded flip and wash reminders so nothing gets missed. (Pro)</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(248,113,113,0.12);">🔔</div>
+        <h3>Flip & Wash Reminders</h3>
+        <p>Daily notifications for each aging cheese. "Time to flip your Gouda — Day 14 of 60." (Pro)</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(168,130,255,0.12);">🔒</div>
+        <h3>Fully Offline</h3>
+        <p>No account, no cloud, no internet required. All your batch logs and aging data stored locally on device.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="brands-section">
+  <div class="container">
+    <p class="section-label">Supported Cheeses</p>
+    <h2>15+ recipes included</h2>
+    <div class="brands-grid">
+      <span class="brand-tag">🧀 Cheddar</span>
+      <span class="brand-tag">🫙 Mozzarella</span>
+      <span class="brand-tag">🍶 Ricotta</span>
+      <span class="brand-tag">🟡 Gouda</span>
+      <span class="brand-tag">🌿 Feta</span>
+      <span class="brand-tag">🍄 Brie / Camembert</span>
+      <span class="brand-tag">🧈 Cream Cheese</span>
+      <span class="brand-tag">🟠 Parmesan</span>
+      <span class="brand-tag">🫶 Havarti</span>
+      <span class="brand-tag">🌾 Paneer</span>
+      <span class="brand-tag">🍃 Manchego-style</span>
+      <span class="brand-tag">⚗️ Custom Recipe Builder</span>
+    </div>
+  </div>
+</section>
+
+<section class="how-section">
+  <div class="container" style="text-align:center;">
+    <p class="section-label">How It Works</p>
+    <h2>Three inputs. Perfect timing.</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <h3>Add rennet to milk</h3>
+        <p>Start the flocculation timer and watch for the milk to set</p>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <h3>Enter floc time</h3>
+        <p>Type in the observed time. CurdClock calculates exactly when to cut</p>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <h3>Follow the steps</h3>
+        <p>Step-by-step countdown timer guides you through to pressing and aging</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="container">
+    <h2>Stop guessing.<br><span style="color:var(--accent);">Time your curd perfectly.</span></h2>
+    <p>Free to use. Pro features $4.99/month.</p>
+    <a href="#" class="btn btn-primary" style="font-size:17px;padding:16px 36px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+      Download on the App Store
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-links">
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="mailto:naruto0414@gmail.com">Support</a>
+    </div>
+    <p>© 2026 osk. All rights reserved.</p>
+    <p style="margin-top:8px;font-size:12px;">CurdClock is a timing guide only. Always check curd texture before cutting. Not a substitute for recipe instructions or professional cheesemaking guidance.</p>
+  </div>
+</footer>
+
+</body>
+</html>
